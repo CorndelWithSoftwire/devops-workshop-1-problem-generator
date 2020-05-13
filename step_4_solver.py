@@ -64,15 +64,15 @@ def main():
         line_number = 1
         while True:
             current_line = file_by_lines[line_number - 1]
-            new_line_number = process_statement(current_line, line_number, file_by_lines)
             print(current_line)
-            print(new_line_number)
-            if new_line_number in lines_hit:
-                line_number = new_line_number
+            if current_line in lines_hit:
                 break
-            lines_hit.add(new_line_number)
+            new_line_number = process_statement(current_line, line_number, file_by_lines)
+            print(new_line_number)
+            lines_hit.add(current_line)
             line_number = new_line_number
-        print(f"Answer: {line_number}")
+        print(f"Answer: Line {line_number} {current_line}")
+
 
 if __name__ == "__main__":
     main()
