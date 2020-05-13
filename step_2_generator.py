@@ -1,6 +1,6 @@
 import random
 
-operators = ['+', '-', '*', '/']
+operators = ['+', '-', 'x', '/']
 
 def build_calc_statement(max) -> str:
     operator = operators[random.randint(0, len(operators) - 1)]
@@ -18,7 +18,7 @@ def process_calc_statement(statement) -> int:
         return param_1 + param_2
     elif operator == '-':
         return param_1 - param_2
-    elif operator == '*':
+    elif operator == 'x':
         return param_1 * param_2
     elif operator == '/':
         return param_1 / param_2
