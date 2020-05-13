@@ -12,6 +12,15 @@ def build_goto_statement(max) -> str:
     line = random.randint(1, max)
     return f"goto {line}"
 
+def build_remove_statement(max) -> str:
+    line = random.randint(1, max)
+    return f"remove {line}"
+
+def build_replace_statement(max) -> str:
+    line_1 = random.randint(1, max)
+    line_2 = random.randint(1, max)
+    return f"replace {line_1} {line_2}"
+
 def build_goto_calc_statement(line_total) -> str:
     while True:
         calc_statement = build_calc_statement(line_total)
@@ -37,7 +46,6 @@ def process_calc_statement(statement) -> int:
     else:
         raise Exception("Unexpected Operator!")
 
-# Returns line number to goto
 def process_goto_statement(statement) -> int:
     split_statement = statement.split()
     if split_statement[1] == 'calc':
@@ -46,26 +54,63 @@ def process_goto_statement(statement) -> int:
     else:
         return int(split_statement[1])
 
+def process_remove_statement(statement, current_line, file_by_lines) -> int:
+    split_statement = statement.split()
+    line_to_remove = int(split_statement[1])
+    if line_to_remove <= current_line:
+        line_to_process_next = current_line
+    else:
+        line_to_process_next = current_line + 1
+    file_by_lines.pop(line_to_remove)
+    return line_to_process_next
+
+def process_replace_statement(statement, current_line, file_by_lines) -> int:
+    split_statement = statement.split()
+    line_number_to_replace = int(split_statement[1])
+    line_number_to_copy = int(split_statement[2])
+    copied_line = file_by_lines[line_number_to_copy - 1]
+    file_by_lines.pop(line_number_to_replace - 1)
+    file_by_lines.insert(line_number_to_replace - 1, copied_line)
+    return current_line + 1
+
+def process_statement(statement, current_line, file_by_lines):
+    split_statement = statement.split()
+    instruction = split_statement[0]
+
+    if instruction == "goto":
+        return process_goto_statement(statement)
+    elif instruction == "remove":
+        return process_remove_statement(statement, current_line, file_by_lines)
+    elif instruction == "replace":
+        return process_replace_statement(statement, current_line, file_by_lines)
+    else:
+        raise Exception("Unexpected Instruction!")
+
 def main():
-    with open("step_3.txt", mode='w') as f:
+    with open("step_4.txt", mode='w') as f:
         line_total = 10000
 
         for i in range(0, line_total):
-            coin_toss = random.randint(0, 1)
-            if coin_toss == 1:
+            statement_dice_roll = random.randint(0, 3)
+            if statement_dice_roll == 0:
                 statement = build_goto_calc_statement(line_total)
-            else:
+            elif statement_dice_roll == 1:
                 statement = build_goto_statement(line_total)
+            elif statement_dice_roll == 2:
+                statement = build_remove_statement(line_total)
+            elif statement_dice_roll == 3:
+                statement = build_replace_statement(line_total)
             statement += "\n"
             f.write(statement)
 
-    with open("step_3.txt", mode='r') as f:
+    with open("step_4.txt", mode='r') as f:
         file_by_lines = f.read().splitlines()
         lines_hit = set()
         line_number = 1
         while True:
             current_line = file_by_lines[line_number - 1]
-            new_line_number = process_goto_statement(current_line)
+            new_line_number = process_statement(current_line, line_number, file_by_lines)
+            print(current_line)
             print(new_line_number)
             if new_line_number in lines_hit:
                 line_number = new_line_number
