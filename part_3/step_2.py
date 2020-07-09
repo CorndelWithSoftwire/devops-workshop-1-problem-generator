@@ -1,11 +1,11 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 
 app = Flask(__name__)
 
 
 @app.route('/films/list')
 def get_films():
-    return app.send_static_file("filmlist.html")
+    return send_from_directory("static", "filmlist.html")
 
 
 if __name__ == '__main__':
